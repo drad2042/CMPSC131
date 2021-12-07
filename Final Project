@@ -1,0 +1,59 @@
+books = open("Booklist", "r")
+library = open("librarylog", "r")
+
+def log_processing():
+
+    x = books.readline()
+    booklst = []
+    while x != "":
+        x = x.strip("\n")
+        booklst.append(x.split("#"))
+        x = books.readline()
+    print(booklst)
+    x = library.readline()
+    loglst = []
+    while x != "":
+        x = x.strip("\n")
+        loglst.append(x.split("#"))
+        x = library.readline()
+    print(loglst)
+
+    for t in loglst:
+        day = t[1]
+
+        if t[0] == "B":
+            student = t[2]
+        elif t[0] == "R":
+            student = t[2]
+            for j in booklst:
+                if j[0] == t[3]:
+                    j[1] += 1
+
+            print("return")
+        elif t[0] == "A":
+            book_added = t[2]
+            templst = [book_added, "1", "FALSE"]
+            booklst.append(templst)
+            print("addition")
+        elif t[0] == "P":
+            student = t[2]
+            print("payment")
+
+def menu():
+    log_processing()
+    choice = int(input("Hi, would you like to \n1. Borrow a book for a certain amount of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4. See the pending fines at the end of a specific day\n"))
+    if choice == 1:
+        print()
+    elif choice == 2:
+        print("yuh")
+    elif choice == 3:
+        print("yuh")
+    elif choice == 4:
+        print("yuh")
+    else:
+        print("Sorry, that's not a choice\n")
+        menu()
+
+log_processing()
+library.close()
+books.close()
