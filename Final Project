@@ -44,18 +44,19 @@ def log_processing():
                 count += 1
                 if log[2] == student[0]:                                        # checking their borrow info
                     duration = int(log[1]) - int(student[2]) + 1
+                    studentlst.pop(count)                                       # removing the student's info since they returned the book
                     if student[4] == "TRUE":                                    # checking the book's restriction status
-                        if duration > 7:                                        # checking if they returned it in time
+                        if duration > 7:                                        # checking if they returned a restricted book in time
                             fine = (duration - 7) * 5                           # adding the fine to the student info
                             fine2 = "$" + str(fine)
-                            studentlst[count].append(fine2)
-                        else:
-                            studentlst.pop(count)                             # removing the student's info if they returned in time
+                            templst = [student[0], fine2]
+                            studentlst.append(templst)                          # adding the student and their fine to the student list
                     else:
-                        if duration > 28:
+                        if duration > 28:                                       # checking if they're overdue on a unrestricted book
                             fine = (duration - 28) * 1
                             fine2 = "$" + str(fine)
-                            studentlst[count].append(fine2)
+                            templst = [student[0], fine2]
+                            studentlst.append(templst)                          # adding the student and their fine to the student list
 
             for book in booklst:
                 if book[0] == log[3]:                                           # checking if the books match
