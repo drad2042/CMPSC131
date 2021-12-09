@@ -1,113 +1,163 @@
-books = open("Booklist", "r")
-library = open("librarylog", "r")
+books = open("booklist.txt", "r")
+library = open("librarylog.txt", "r")
 
-def log_processing():
 
+booklst = [] # [Book, number of copies, restrictions]
+loglst = [] # [Action, Start date, Student, book, duration]
+
+def set_booklst():
     x = books.readline()
-    booklst = []
-    studentlst = []
-    finelst = []
-    borrowlst = []
     while x != "":
         x = x.strip("\n")
         booklst.append(x.split("#"))
         x = books.readline()
-    print(booklst)
+
+def set_loglst():
     x = library.readline()
-    loglst = []
     while x != "":
         x = x.strip("\n")
         loglst.append(x.split("#"))
         x = library.readline()
-    print(loglst)
+    
+        
+def log_processing():
+    x = books.readline()
+    #booklst = [] # [Book, number of copies, restrictions]
+    studentlst = [] # [Student, Book, Start date, end date, restrictions]
+    finelst = []
+    borrowlst = []
+    status = 0
+    #loglst = [] # [Action, Start date, Student, book, duration]
+
+    x = library.readline()
+    while x != "":
+        x = x.strip("\n")
+        loglst.append(x.split("#"))
+        x = library.readline()
+    #print(loglst)
+
+
 
     for log in loglst:
 
         start_day = log[1]
 
-        if log[0] == "B":                                                       # BOOK BORROW
+        if log[0] == "B":      # BOOK BORROW
 
-            for book in booklst:                                                # Retrieving the book's restriction status
+            for book in booklst:    # Retrieving the book's restriction status
                 if book[0] == log[3]:
                     status = book[2]
 
-            info = [log[2], log[3], start_day, log[4], status]                  # adding the student, book, start date, end date, and restrictions to a list
+            info = [log[2], log[3], start_day, log[4], status]   # adding the student, book, start date, end date, and restrictions to a list
             studentlst.append(info)
 
             for book in booklst:
-                if book[0] == log[3]:                                           # checking if the books match
-                    temp = int(book[1]) - 1                                     # decreasing the inventory of the book
+                if book[0] == log[3]:        # checking if the books match
+                    temp = int(book[1]) - 1      # decreasing the inventory of the book
                     temp = str(temp)
                     book[1] = temp
 
-        elif log[0] == "R":                                                     # BOOK RETURN
+
+
+
+
+                    
+
+        elif log[0] == "R":      # BOOK RETURN
             count = - 1
 
             for student in studentlst:
                 count += 1
-                if log[2] == student[0]:                                        # checking their borrow info
+                if log[2] == student[0]:        # checking their borrow info
                     duration = int(log[1]) - int(student[2]) + 1
-                    studentlst.pop(count)                                       # removing the student's info since they returned the book
-                    if student[4] == "TRUE":                                    # checking the book's restriction status
-                        if duration > 7:                                        # checking if they returned a restricted book in time
-                            fine = (duration - 7) * 5                           # adding the fine to the student info
+                    studentlst.pop(count)        # removing the student's info since they returned the book
+                    if student[4] == "TRUE":    # checking the book's restriction status
+                        if duration > 7:         # checking if they returned a restricted book in time
+                            fine = (duration - 7) * 5        # adding the fine to the student info
                             fine2 = "$" + str(fine)
                             templst = [student[0], fine2]
-                            studentlst.append(templst)                          # adding the student and their fine to the student list
+                            studentlst.append(templst)      # adding the student and their fine to the student list
                     else:
-                        if duration > 28:                                       # checking if they're overdue on a unrestricted book
-                            fine = (duration - 28) * 1
+                        if duration > 28:    # checking if they're overdue on a unrestricted book
+                            fine = (duration - 28) * 5
                             fine2 = "$" + str(fine)
                             templst = [student[0], fine2]
-                            studentlst.append(templst)                          # adding the student and their fine to the student list
-
+                            print(templst)
+                            studentlst.append(templst)      # adding the student and their fine to the student list
+        
             for book in booklst:
-                if book[0] == log[3]:                                           # checking if the books match
-                    temp = int(book[1]) + 1                                     # increasing the inventory of the book
+                if book[0] == log[3]:        # checking if the books match
+                    temp = int(book[1]) + 1 # increasing the inventory of the book
                     temp = str(temp)
                     book[1] = temp
 
-        elif log[0] == "A":                                                     # BOOK ADDITION
+
+
+
+        elif log[0] == "A":  # BOOK ADDITION
             new = True
 
             for p in booklst:
-                if p[0] == log[2]:                                              # checking to see if we have this book already
-                    temp = int(p[1]) + 1                                        # increasing the stock if we do
+                if p[0] == log[2]:   # checking to see if we have this book already
+                    temp = int(p[1]) + 1  # increasing the stock if we do
                     temp = str(temp)
                     p[1] = temp
                     new = False
             if new:
-                book_info = [log[2], "1", "FALSE"]                              # adding the new book name, inventory, and restriction status
-                booklst.append(book_info)                                       # adding this info to the book list
+                book_info = [log[2], "1", "FALSE"]  # adding the new book name, inventory, and restriction status
+                booklst.append(book_info) # adding this info to the book list
 
-        elif log[0] == "P":                                                     # FINE PAYMENT
+        elif log[0] == "P":  # FINE PAYMENT
             count = -1
             for student in studentlst:
-                count += 1                                                      # keeping track of the index
-                if log[2] == student[0] and student[1][0] == "$":               # checking to find their log with the fine in it
-                    debt = student[1].replace("$", "")                          # getting rid of the dollar sign to use just the integer
+                count += 1           # keeping track of the index
+                if log[2] == student[0] and student[1][0] == "$":    # checking to find their log with the fine in it
+                    debt = student[1].replace("$", "")               # getting rid of the dollar sign to use just the integer
                     
-                    if int(debt) - int(log[3]) == 0:                            # if they pay the fine in full then we remove their fine info
+                    if int(debt) - int(log[3]) == 0:    # if they pay the fine in full then we remove their fine info
                         studentlst.pop(count)
                     else:
-                        leftover = int(debt) - int(log[3])                      # if they don't pay the fine in full then change the fine amount to the new one
+                        leftover = int(debt) - int(log[3])   # if they don't pay the fine in full then change the fine amount to the new one
                         leftover = "$" + str(leftover)
                         student[1] = leftover
     return studentlst
-def menu():
-    log_processing()
-    choice = int(input("Hi, would you like to \n1. Borrow a book for a certain amount of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4. See the pending fines at the end of a specific day\n"))
-    if choice == 1:
-        print()
-    elif choice == 2:
 
+
+
+
+    
+def menu():
+    set_booklst()
+    log_processing()
+    
+    found = False
+    choice = int(input("Hi, would you like to \n1. Borrow a book for a certain number of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4. See the pending fines at the end of a specific day\n"))
+
+    if choice == 1:
+        bk = input("Which book would you like to borrow? ")
+        while found == False:
+            for book in booklst:
+                if bk in book:
+                    print("We have that book!")
+                    found = True
+                    
+    elif choice == 2:
+        print("")
     elif choice == 3:
         print("yuh")
     elif choice == 4:
-
+        print("")
     else:
         print("Sorry, that's not a choice\n")
         menu()
 
+
+
+
+
+
+
+log_processing()
+menu()
 library.close()
 books.close()
