@@ -5,6 +5,7 @@ def log_processing():
 
     x = books.readline()
     booklst = []
+    studentlst = []
     while x != "":
         x = x.strip("\n")
         booklst.append(x.split("#"))
@@ -18,26 +19,65 @@ def log_processing():
         x = library.readline()
     print(loglst)
 
-    for t in loglst:
-        day = t[1]
+    for log in loglst:
+        start_day = log[1]
 
-        if t[0] == "B":
-            student = t[2]
-        elif t[0] == "R":
-            student = t[2]
-            for j in booklst:
-                if j[0] == t[3]:
-                    j[1] += 1
+        if log[0] == "B":                                                       # BOOK BORROW
 
-            print("return")
-        elif t[0] == "A":
-            book_added = t[2]
-            templst = [book_added, "1", "FALSE"]
-            booklst.append(templst)
-            print("addition")
-        elif t[0] == "P":
-            student = t[2]
-            print("payment")
+            for book in booklst:                                                # Retrieving the book's restriction status
+                if book[0] == log[3]:
+                    status = book[2]
+
+            info = [log[2], log[3], start_day, log[4], status]                  # adding the student, book, start date, end date, and restrictions to a list
+            studentlst.append(info)
+
+            for book in booklst:
+                if book[0] == log[3]:                                           # checking if the books match
+                    temp = int(book[1]) - 1                                     # decreasing the inventory of the book
+                    temp = str(temp)
+                    book[1] = temp
+
+        elif log[0] == "R":                                                     # BOOK RETURN
+            count = - 1
+
+            for student in studentlst:
+                count += 1
+                if log[2] == student[0]:                                        # checking their borrow info
+                    duration = int(log[1]) - int(student[2]) + 1
+                    if student[4] == "TRUE":                                    # checking the book's restriction status
+                        if duration > 7:                                        # checking if they returned it in time
+                            fine = (duration - 7) * 5                           # adding the fine to the student info
+                            fine2 = "$" + str(fine)
+                            studentlst[count].append(fine2)
+                        else:
+                            studentlst.pop(count)                             # removing the student's info if they returned in time
+                    else:
+                        if duration > 28:
+                            fine = (duration - 28) * 1
+                            fine2 = "$" + str(fine)
+                            studentlst[count].append(fine2)
+
+            for book in booklst:
+                if book[0] == log[3]:                                           # checking if the books match
+                    temp = int(book[1]) + 1                                     # increasing the inventory of the book
+                    temp = str(temp)
+                    book[1] = temp
+
+        elif log[0] == "A":                                                     # BOOK ADDITION
+            new = True
+
+            for p in booklst:
+                if p[0] == log[2]:
+                    temp = int(p[1]) + 1
+                    temp = str(temp)
+                    p[1] = temp
+                    new = False
+            if new:
+                book_info = [log[2], "1", "FALSE"]                              # adding the new book name, inventory, and restriction status
+                booklst.append(book_info)                                       # adding this info to the book list
+
+        elif log[0] == "P":                                                     # FINE PAYMENT
+
 
 def menu():
     log_processing()
