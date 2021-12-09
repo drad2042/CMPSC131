@@ -6,6 +6,8 @@ def log_processing():
     x = books.readline()
     booklst = []
     studentlst = []
+    finelst = []
+    borrowlst = []
     while x != "":
         x = x.strip("\n")
         booklst.append(x.split("#"))
@@ -20,6 +22,7 @@ def log_processing():
     print(loglst)
 
     for log in loglst:
+
         start_day = log[1]
 
         if log[0] == "B":                                                       # BOOK BORROW
@@ -68,8 +71,8 @@ def log_processing():
             new = True
 
             for p in booklst:
-                if p[0] == log[2]:
-                    temp = int(p[1]) + 1
+                if p[0] == log[2]:                                              # checking to see if we have this book already
+                    temp = int(p[1]) + 1                                        # increasing the stock if we do
                     temp = str(temp)
                     p[1] = temp
                     new = False
@@ -78,23 +81,33 @@ def log_processing():
                 booklst.append(book_info)                                       # adding this info to the book list
 
         elif log[0] == "P":                                                     # FINE PAYMENT
-
-
+            count = -1
+            for student in studentlst:
+                count += 1                                                      # keeping track of the index
+                if log[2] == student[0] and student[1][0] == "$":               # checking to find their log with the fine in it
+                    debt = student[1].replace("$", "")                          # getting rid of the dollar sign to use just the integer
+                    
+                    if int(debt) - int(log[3]) == 0:                            # if they pay the fine in full then we remove their fine info
+                        studentlst.pop(count)
+                    else:
+                        leftover = int(debt) - int(log[3])                      # if they don't pay the fine in full then change the fine amount to the new one
+                        leftover = "$" + str(leftover)
+                        student[1] = leftover
+    return studentlst
 def menu():
     log_processing()
     choice = int(input("Hi, would you like to \n1. Borrow a book for a certain amount of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4. See the pending fines at the end of a specific day\n"))
     if choice == 1:
         print()
     elif choice == 2:
-        print("yuh")
+
     elif choice == 3:
         print("yuh")
     elif choice == 4:
-        print("yuh")
+
     else:
         print("Sorry, that's not a choice\n")
         menu()
 
-log_processing()
 library.close()
 books.close()
