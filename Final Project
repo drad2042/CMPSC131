@@ -5,6 +5,17 @@ library = open("librarylog.txt", "r")
 booklst = [] # [Book, number of copies, restrictions]
 loglst = [] # [Action, Start date, Student, book, duration]
 
+def restriction_check(arg): #Checks if a book has borrowing restrictions on it
+    global maxdays
+    for book in booklst:
+        if arg in book:
+            if book[2] == "FALSE":
+                print("You can take out this book for up to 28 days")
+                maxdays = 28
+            else:
+                print("You can take this book out for up to 7 days")
+                maxdays = 7
+    
 def set_booklst():
     x = books.readline()
     while x != "":
@@ -21,7 +32,6 @@ def set_loglst():
     
         
 def log_processing():
-    x = books.readline()
     #booklst = [] # [Book, number of copies, restrictions]
     studentlst = [] # [Student, Book, Start date, end date, restrictions]
     finelst = []
@@ -132,14 +142,17 @@ def menu():
     
     found = False
     choice = int(input("Hi, would you like to \n1. Borrow a book for a certain number of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4. See the pending fines at the end of a specific day\n"))
-
+    
     if choice == 1:
         bk = input("Which book would you like to borrow? ")
         while found == False:
             for book in booklst:
                 if bk in book:
                     print("We have that book!")
+                    restriction_check(bk)
                     found = True
+
+        ans = int(input("How many days do you want to take this book out for? "))
                     
     elif choice == 2:
         print("")
