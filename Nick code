@@ -7,6 +7,7 @@ studentlst = []  # [Student, Book, Start date, end date, restrictions]
 popularlst = []  # [Book, # of days borrowed]
 popularlst2 = []  # [Book, TOTAL # of days borrowed]
 usagelist = []  # [Book, Usage ratio]
+finelst = []    # [Student, total fine]
 inventory = 0
 
 
@@ -62,9 +63,21 @@ def book_check(found):
     if duration > maxdays:
         print("Sorry you can't borrow it for that long")
         menu()
-
+    name = input("What's your name? ")
+    stu_book_count = 0
+    too_many = False
+    for student in studentlst:
+        if student[0] == name:
+            if student[1] == bk:
+                print("Sorry you already have that book")
+                menu()
+            stu_book_count += 1
+            if stu_book_count >= 3:
+                too_many = True
+    if too_many:
+        print("Sorry, you already have too many books checked out.")
+        menu()
     print("Congrats! You have successfully borrowed the book for", duration, "days.")
-
 
 def set_booklst():
     x = books.readline()
@@ -86,10 +99,6 @@ def fine_check():
             fine_lst.append(student)
             count += 1
     print(fine_lst)
-    if count >= 3:
-        valid = False
-    else:
-        valid = True
     for fine in fine_lst:
         print(fine[0] + " owes " + fine[1] + " still")
 
@@ -118,12 +127,7 @@ def usage_ratio():
 
 
 def log_processing(start):
-    # booklst = [] # [Book, number of copies, restrictions]
-    # studentlst = [] # [Student, Book, Start date, end date, restrictions]
-    finelst = []
-    borrowlst = []
     status = 0
-    # loglst = [] # [Action, Start date, Student, book, duration]
 
     set_loglst()
     for log in loglst:
@@ -138,21 +142,12 @@ def log_processing(start):
                     if book[0] == log[3]:
                         status = book[2]
 
-                info = [log[2], log[3], start_day, log[4],
-                        status]  # adding the student, book, start date, end date, and restrictions to a list
+                info = [log[2], log[3], start_day, log[4], status]  # adding the student, book, start date, end date, and restrictions to a list
 
                 studentlst.append(info)
                 for book in booklst:
                     if book[0] == log[3]:  # checking if the books match
                         book[1] = int(book[1]) - 1  # decreasing the inventory of the book
-
-                        # temp = str(temp)
-                        # book[1] = temp
-
-
-
-
-
 
             elif log[0] == "R":  # BOOK RETURN
                 count = - 1
@@ -199,9 +194,6 @@ def log_processing(start):
                         temp = int(book[1]) + 1  # increasing the inventory of the book
                         temp = str(temp)
                         book[1] = temp
-                        print("returned that hoe")
-
-
 
             elif log[0] == "A":  # BOOK ADDITION
                 new = True
@@ -259,7 +251,6 @@ def menu():
     else:
         print("Sorry, that's not a choice\n")
         menu()
-
 
 menu()
 library.close()
