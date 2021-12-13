@@ -4,7 +4,11 @@ library = open("librarylog.txt", "r")
 booklst = []  # [Book, number of copies, restrictions]
 loglst = []  # [Action, Start date, Student, book, duration]
 studentlst = []  # [Student, Book, Start date, end date, restrictions]
-studentlst2 = []
+popularlst = []  # [Book, # of days borrowed]
+popularlst2 = []  # [Book, TOTAL # of days borrowed]
+usagelist = []  # [Book, Usage ratio]
+inventory = 0
+
 
 def restriction_check(arg):  # Checks if a book has borrowing restrictions on it
     global maxdays
@@ -28,12 +32,13 @@ def set_loglst():
 
 
 def book_check(found):
-    start_day = int(input("What day would you like to borrow a book?"))
+    inventory = 0
+    start_day = int(input("What day would you like to borrow a book? "))
     log_processing(start_day)
     print(booklst)
     count = 0
 
-    bk = input("What book would you like to borrow?")
+    bk = input("What book would you like to borrow? ")
     for book in booklst:
         if book[0] == bk:
             inventory = book[1]
@@ -52,7 +57,7 @@ def book_check(found):
         print("Yes, we have that book!")
 
     restriction_check(bk)
-    duration = int(input("How many days would you like the book for?"))
+    duration = int(input("How many days would you like the book for? "))
 
     if duration > maxdays:
         print("Sorry you can't borrow it for that long")
@@ -86,9 +91,6 @@ def set_booklst():
         x = books.readline()
 
 
-# def inv_check():
-# for log in loglst:
-# if b
 def fine_check():
     end = int(input("What particular day would you like to know the fines for?"))
     log_processing(end)
@@ -108,9 +110,29 @@ def fine_check():
     for fine in fine_lst:
         print(fine[0] + " owes " + fine[1] + " still")
 
+
+def popular_books():
+    for book in booklst:
+        sum = 0
+        for match in popularlst:
+            if match[0] == book[0]:
+                sum += int(match[1])
+        popularlst2.append([book[0], sum])
+    popularlst2.sort(key=lambda popularlst2: popularlst2[1])
+    popularlst2.reverse()
+    print(popularlst2)
+
+
 def usage_ratio():
     start = 30
     log_processing(start)
+    print(popularlst2[1], "pop")
+    temp = int(popularlst2[1])
+    for book in booklst:
+        total = (book[1] * 29)
+        ratio = temp / total
+        print(ratio, "%")
+
 
 def log_processing(start):
     # booklst = [] # [Book, number of copies, restrictions]
@@ -133,18 +155,16 @@ def log_processing(start):
                     if book[0] == log[3]:
                         status = book[2]
 
-                info = [log[2], log[3], start_day, log[4], status]  # adding the student, book, start date, end date, and restrictions to a list
+                info = [log[2], log[3], start_day, log[4],
+                        status]  # adding the student, book, start date, end date, and restrictions to a list
 
                 studentlst.append(info)
-                print(studentlst)
                 for book in booklst:
                     if book[0] == log[3]:  # checking if the books match
                         book[1] = int(book[1]) - 1  # decreasing the inventory of the book
 
                         # temp = str(temp)
                         # book[1] = temp
-                        print("YES bitches")
-
 
 
 
@@ -156,17 +176,38 @@ def log_processing(start):
 
                 for student in studentlst:
                     count += 1
-                    if log[2] == student[0]:  # checking their borrow info
-                        duration = int(log[1]) - int(student[2])
+                    if ((log[2] == student[0]) and ("$" in student[1])):  # checking their borrow info
+                        duration = int(log[1]) - int(student[2])  # finding how long they physically had the book
+                        popularlst.append([student[1], duration])  # adding how long they had the book to a list
                         studentlst.pop(count)  # removing the student's info since they returned the book
-                        print(studentlst)
+                        print("borrow time")
                         if student[4] == "TRUE":  # checking the book's restriction status
                             if duration > 7:  # checking if they returned a restricted book in time
-                                print("adding a fine")
+                                print("Adding a fine.")
                                 fine = (duration - 7) * 5  # adding the fine to the student info
-                                fine2 = "$" + str(fine)
-                                templst = [student[0], fine2]
-                                studentlst.append(templst)  # adding the student and their fine to the student list
+                                print(studentlst)
+                                fine_statement = False
+                                i = 0
+                                index = 0
+                                while i < len(studentlst):
+                                    if studentlst[i][0] == log[2] and studentlst[i][1][0] == "$":
+                                        fine_statement = True
+                                        index = i
+                                    i += 1
+                                if fine_statement:  # checking if they have another
+                                    print("Fine statement found")
+                                    temp = studentlst[index][1].replace("$", "")
+                                    temp = int(temp) + fine
+                                    studentlst[index][1] = temp
+                                    print(studentlst)
+
+
+                                else:  # adding a fine statement if they don't already have one
+                                    print("Fine statement added")
+                                    fine2 = "$" + str(fine)
+                                    templst = [student[0], fine2]
+                                    studentlst.append(templst)  # adding the student and their fine to the student list
+
                         else:
                             if duration > 28:  # checking if they're overdue on a unrestricted book
                                 fine = (duration - 28) * 5
@@ -199,9 +240,14 @@ def log_processing(start):
 
             elif log[0] == "P":  # FINE PAYMENT
                 count = -1
+                print("Paying a fine")
                 for student in studentlst:
                     count += 1  # keeping track of the index
-                    if log[2] == student[0] and student[1][0] == "$":  # checking to find their log with the fine in it
+                    print(student[1], "GUATEMALA")
+                    print(log[2], "corn")
+                    print(student[0], "g")
+                    if (("$" in str(student[1])) and (
+                            (log[2]) == student[0])):  # checking to find their log with the fine in it
                         debt = student[1].replace("$", "")  # getting rid of the dollar sign to use just the integer
 
                         if int(debt) - int(log[3]) == 0:  # if they pay the fine in full then we remove their fine info
@@ -219,20 +265,29 @@ def menu():
     set_booklst()
     set_loglst()
     log_processing(start)
-
     found = False
-    choice = int(input("Hi, would you like to \n1. Borrow a book for a certain number of days\n2. See the most popular books in the library\n3. See which books have the highest borrow ratio\n4.See a list of the most popular books or a list of the books with the highest usage ratio\n5. See the pending fines at the end of a specific day\n"))
+    choice = int(input(
+        "Hi, would you like to \n1. Borrow a book for a certain number of days\n2. See the most popular book in the library\n3. See which books has the highest borrow ratio\n4. See a list of the most popular books or a list of the books with the highest usage ratio\n5. See the pending fines at the end of a specific day\n"))
 
     if choice == 1:  # MAKE FUNCTION TO REPEAT IF THE BOOK IS NOT FOUND!?
         book_check(found)
 
-    elif choice == 2:
+    elif choice == 2:  # see the most popular book in the library (borrowed for the most days)
+        popular_books()
+        print("The most popular book is " + popularlst2[0][0] + " for " + str(popularlst2[0][1]) + " days ")
+    elif choice == 3:  # see which book has the highest borrow ratio
         print("yes")
-    elif choice == 3:
-        print("yes")
-    elif choice == 4:
-        print("yes")
-    elif choice == 5:
+    elif choice == 4:  # see a list of the books with the highest popularity and borrow ratio
+        popular_books()
+        pick = int(input("Would you like to see a list for 1. highest popularity or 2. highest borrow ratio"))
+        if pick == 1:
+            print(popularlst2)
+        elif pick == 2:
+            usage_ratio()
+        else:
+            print("Sorry that's not an option")
+            menu()
+    elif choice == 5:  # see pending fines at a particular day
         fine_check()
     else:
         print("Sorry, that's not a choice\n")
