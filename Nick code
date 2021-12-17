@@ -126,7 +126,7 @@ def usage_ratio():
         total = (int(booklst[i][1]) * 29)
         ratio = temp/total
         print((popularlst2[i][0]),"-", ratio, "%")
-        i+=1
+        i += 1
 
 def top_usage():
     start = 100000
@@ -140,7 +140,7 @@ def top_usage():
         if int(booklst[i][1]) > 0:
             ratio = temp/total
         popularlst3.append(ratio)
-        i+=1
+        i += 1
     print(popularlst2[0][0], "-", popularlst3[0], "%")
 
 
@@ -265,7 +265,11 @@ def menu():
     elif choice == 4:  # see a list of the books with the highest popularity and borrow ratio
         log_processing(1000)
         popular_books()
-        usage_ratio()
+        listchoice = int(input("Would you like to see a list for 1. Most popular books or 2. Books with the highest usage ratio"))
+        if listchoice == 1:
+            print(popularlst2)
+        elif listchoice == 2:
+            usage_ratio()
     elif choice == 5:  # see pending fines at a particular day
         fine_check()
     else:
