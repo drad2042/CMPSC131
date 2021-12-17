@@ -179,14 +179,15 @@ def log_processing(start):
                                     fine = (duration - 7) * 5  # adding the fine to the student info
                                     i = 0
                                     new_fine = False
-                                    while i < len(finelst):
-                                        if student[0] == finelst[i][0]:
-                                            convert = ((finelst[i][1])[1:])
-                                            finelst[i][1] = int(convert) + fine  # adding the new fine to their already existing fine
-                                            new_fine = True  # telling us this student already has a fine due
-                                        i += 1
-                                        if new_fine == False:
-                                            finelst.append([student[0], "$" + str(fine)])
+                                    if len(finelst)  != 0:
+                                        while i < len(finelst):
+                                            if student[0] == finelst[i][0]:
+                                                convert = ((finelst[i][1])[1:])
+                                                finelst[i][1] = int(convert) + fine  # adding the new fine to their already existing fine
+                                                new_fine = True  # telling us this student already has a fine due
+                                            i += 1
+                                    if new_fine == False:
+                                        finelst.append([student[0], "$" + str(fine)])
 
                             else:
                                 if duration > 28:  # checking if they're overdue on a unrestricted book
@@ -196,12 +197,13 @@ def log_processing(start):
                                     i = 0
                                     new_fine = False
 
-                                    while i < len(finelst):
-                                        if student[0] == finelst[i][0]:
-                                            convert = ((finelst[i][1])[1:])
-                                            finelst[i][1] = int(convert) + fine  # adding the new fine to their already existing fine
-                                            new_fine = True  # telling us this student already has a fine due
-                                        i += 1
+                                    if len(finelst) != 0:
+                                        while i < len(finelst):
+                                            if student[0] == finelst[i][0]:
+                                                convert = ((finelst[i][1])[1:])
+                                                finelst[i][1] = int(convert) + fine  # adding the new fine to their already existing fine
+                                                new_fine = True  # telling us this student already has a fine due
+                                            i += 1
 
                                     if new_fine == False:
                                         finelst.append([student[0], "$" + str(fine)])
