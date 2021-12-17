@@ -70,10 +70,13 @@ def book_check(found):
             print("Sorry you can't borrow it for that long")
             check = False
             #menu()
+            
     if check == True:
         name = input("What's your name? ")
+        
     stu_book_count = 0
     too_many = False
+    
     for student in studentlst:
         if student[0] == name:
             if student[1] == bk:
@@ -82,6 +85,7 @@ def book_check(found):
             stu_book_count += 1
             if stu_book_count >= 3:
                 too_many = True
+                
     if too_many:
         print("Sorry, you already have too many books checked out.")
         check = False
@@ -170,9 +174,7 @@ def log_processing(start):
 
                 for student in studentlst:
                     count += 1
-                    if log[2] == student[0] and log[3] == student[
-                        1]:  # checking their borrow info (making sure they have the same student, book, and it's not a fine statement)
-
+                    if log[2] == student[0] and log[3] == student[1]:  # checking their borrow info (making sure they have the same student, book, and it's not a fine statement)
                         duration = int(log[1]) - int(student[2])  # finding how long they physically had the book
                         popularlst.append([student[1], duration])  # adding how long they had the book to a list of the book
                         studentlst.pop(count)  # removing the student's info since they returned the book
@@ -187,15 +189,14 @@ def log_processing(start):
                                 while i < len(finelst):
                                     if student[0] == finelst[i][0]:
                                         finelst[i][1].replace("$", "")
-                                        finelst[i][1] = int(
-                                            finelst[i][1]) + fine  # adding the new fine to their already existing fine
+                                        finelst[i][1] = int(finelst[i][1]) + fine  # adding the new fine to their already existing fine
 
                                         new_fine = True  # telling us this student already has a fine due
                                     i += 1
 
                                 if new_fine == True:
                                     finelst.append([student[0], "$" + str(fine)])
-                                    print("JIMBO")
+                        
                         else:
                             if duration > 28:  # checking if they're overdue on a unrestricted book
 
@@ -207,8 +208,7 @@ def log_processing(start):
                                 while i < len(finelst):
                                     if student[0] == finelst[i][0]:
                                         finelst[i][1].replace("$", "")
-                                        finelst[i][1] = int(
-                                            finelst[i][1]) + fine  # adding the new fine to their already existing fine
+                                        finelst[i][1] = int(finelst[i][1]) + fine  # adding the new fine to their already existing fine
                                         new_fine = True  # telling us this student already has a fine due
 
                                     i += 1
@@ -241,7 +241,7 @@ def log_processing(start):
 
                 count = -1
                 #print("Paying a fine")
-                #print(finelst)
+                
                 for fine in finelst:
 
                     count += 1  # keeping track of the index
@@ -269,11 +269,9 @@ def menu():
     elif choice == 2:  # see the most popular book in the library (borrowed for the most days)
         log_processing(1000)
         popular_books()
-        print("The most popular book is " + popularlst2[0][0] + " which was borrowed for " + str(
-            popularlst2[0][1]) + " days")
+        print("The most popular book is " + popularlst2[0][0] + " which was borrowed for " + str(popularlst2[0][1]) + " days")
     elif choice == 3:  # see which book has the highest borrow ratio
         top_usage()
-        #print("yes")
     elif choice == 4:  # see a list of the books with the highest popularity and borrow ratio
         log_processing(1000)
         popular_books()
@@ -290,7 +288,7 @@ def menu():
         fine_check()
     else:
         print("Sorry, that's not a choice\n")
-        menu()
+        #menu()
 
 
 menu()
