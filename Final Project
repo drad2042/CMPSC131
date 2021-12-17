@@ -1,4 +1,4 @@
-#Daniel Radunsky, Nick Malloy
+#Collaborators: Daniel Radunsky, Nick Malloy
 books = open("booklist-2.txt", "r")
 library = open("librarylog-3.txt", "r")
 
